@@ -5,9 +5,13 @@
 package it.polito.tdp.crimes;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import it.polito.tdp.crimes.model.Model;
+import it.polito.tdp.crimes.model.Vicino;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -25,7 +29,7 @@ public class FXMLController {
     private URL location;
 
     @FXML // fx:id="boxAnno"
-    private ComboBox<?> boxAnno; // Value injected by FXMLLoader
+    private ComboBox<Integer> boxAnno; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxMese"
     private ComboBox<?> boxMese; // Value injected by FXMLLoader
@@ -47,7 +51,19 @@ public class FXMLController {
 
     @FXML
     void doCreaReteCittadina(ActionEvent event) {
-
+    	this.txtResult.clear();
+    	int anno= this.boxAnno.getValue();
+    	this.model.creaGrafo(anno);
+    	this.txtResult.appendText("Grafo creato con #vertici: "+this.model.vertici().size()+" #archi: "+this.model.archi().size()+"\n");
+    	List<Integer> vertici = new ArrayList<>(this.model.vertici());
+    	Collections.sort(vertici);
+    	for(Integer i: vertici ) {
+    		this.txtResult.appendText("Vicini di "+i+":\n");
+    		for(Vicino v: this.model.getVicini(i)) {
+    			this.txtResult.appendText(v.getDistretto()+" "+v.getDistanza()+"\n");
+    		}
+    	}
+    
     }
 
     @FXML
@@ -69,5 +85,6 @@ public class FXMLController {
     
     public void setModel(Model model) {
     	this.model = model;
+    	this.boxAnno.getItems().addAll(this.model.listAllYears());
     }
 }
