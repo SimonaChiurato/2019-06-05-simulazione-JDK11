@@ -1,6 +1,7 @@
 package it.polito.tdp.crimes.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -17,7 +18,7 @@ import it.polito.tdp.crimes.db.EventsDao;
 public class Model {
 	EventsDao dao;
 	SimpleWeightedGraph<Integer, DefaultWeightedEdge> grafo;
-	
+	Simulator sim;
 	public Model() {
 		this.dao= new EventsDao();
 	}
@@ -57,6 +58,22 @@ public class Model {
 		for(Integer i: vicini) {
 			result.add(new Vicino(i, grafo.getEdgeWeight(grafo.getEdge(distretto, i))));
 		}
+		Collections.sort(result);
 		return result;
+	}
+	public List<Integer> listAllMonth(){
+		return this.dao.listAllMonth();
+	}
+	public List<Integer> listAllDay(){
+		return this.dao.listAllDays();
+	}
+	
+	public void simula(int anno, int mese, int giorno, int N) {
+		sim= new Simulator(anno, mese, giorno, N, this.dao.distrettoMinoreCriminalita(anno), grafo, this);
+		sim.init();
+		sim.run();
+	}
+	public int malGestiti() {
+		return this.sim.malGestiti();
 	}
 }

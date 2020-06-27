@@ -32,10 +32,10 @@ public class FXMLController {
     private ComboBox<Integer> boxAnno; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxMese"
-    private ComboBox<?> boxMese; // Value injected by FXMLLoader
+    private ComboBox<Integer> boxMese; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxGiorno"
-    private ComboBox<?> boxGiorno; // Value injected by FXMLLoader
+    private ComboBox<Integer> boxGiorno; // Value injected by FXMLLoader
 
     @FXML // fx:id="btnCreaReteCittadina"
     private Button btnCreaReteCittadina; // Value injected by FXMLLoader
@@ -63,12 +63,25 @@ public class FXMLController {
     			this.txtResult.appendText(v.getDistretto()+" "+v.getDistanza()+"\n");
     		}
     	}
-    
+    this.boxMese.getItems().addAll(this.model.listAllMonth());
+    this.boxGiorno.getItems().addAll(this.model.listAllDay());
     }
 
     @FXML
     void doSimula(ActionEvent event) {
-
+    	this.txtResult.clear();
+    	int anno= this.boxAnno.getValue();
+    	Integer giorno= this.boxGiorno.getValue();
+    	Integer mese= this.boxMese.getValue();
+    	String input= this.txtN.getText();
+    	
+    	if(input.matches("[0-9]+") && Integer.parseInt(input)>0 && Integer.parseInt(input)<11) {
+    		Integer N= Integer.parseInt(input);
+    		this.model.simula(anno, mese, giorno, N);
+    	}else {
+    		this.txtResult.appendText("Devi inserire un numero compreso tra 1 e 10\n");
+    	}
+    	this.txtResult.appendText("MalGestiti: "+this.model.malGestiti());
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete

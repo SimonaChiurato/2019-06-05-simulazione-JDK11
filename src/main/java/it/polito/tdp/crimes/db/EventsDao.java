@@ -15,13 +15,15 @@ import it.polito.tdp.crimes.model.Event;
 
 public class EventsDao {
 	
-	public List<Event> listAllEvents(){
-		String sql = "SELECT * FROM events" ;
+	public List<Event> listAllEvents(int anno, int mese, int giorno){
+		String sql = "SELECT *  FROM `events` where YEAR(reported_date)=? AND MONTH(reported_date)=? AND DAY(reported_date)=? " ;
 		try {
 			Connection conn = DBConnect.getConnection() ;
 
 			PreparedStatement st = conn.prepareStatement(sql) ;
-			
+			st.setInt(1, anno);
+			st.setInt(2, mese);
+			st.setInt(3, giorno);
 			List<Event> list = new ArrayList<>() ;
 			
 			ResultSet res = st.executeQuery() ;
@@ -148,4 +150,99 @@ public class EventsDao {
 			return null ;
 		}
 	}
+	public List<Integer> listAllDays(){
+		String sql = "SELECT distinct day(reported_date) as day FROM `events` ORDER by day(reported_date)" ;
+		try {
+			Connection conn = DBConnect.getConnection() ;
+
+			PreparedStatement st = conn.prepareStatement(sql) ;
+			
+			List<Integer> list = new ArrayList<>() ;
+			
+			ResultSet res = st.executeQuery() ;
+			
+			while(res.next()) {
+				try {
+					list.add(
+							res.getInt("day")
+						);
+				} catch (Throwable t) {
+					t.printStackTrace();
+				
+				}
+			}
+			
+			conn.close();
+			return list ;
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null ;
+		}
+	}
+	public List<Integer> listAllMonth(){
+		String sql = "SELECT distinct month(reported_date) as month FROM `events` ORDER by month(reported_date)" ;
+		try {
+			Connection conn = DBConnect.getConnection() ;
+
+			PreparedStatement st = conn.prepareStatement(sql) ;
+			
+			List<Integer> list = new ArrayList<>() ;
+			
+			ResultSet res = st.executeQuery() ;
+			
+			while(res.next()) {
+				try {
+					list.add(
+							res.getInt("month")
+						);
+				} catch (Throwable t) {
+					t.printStackTrace();
+					
+				}
+			}
+			
+			conn.close();
+			return list ;
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null ;
+		}
+	}
+	public Integer distrettoMinoreCriminalita(int anno){
+		String sql = "SELECT district_id as id FROM `events` where YEAR(reported_date)=? GROUP BY district_id Order by COUNT(*) " ;
+		try {
+			Connection conn = DBConnect.getConnection() ;
+
+			PreparedStatement st = conn.prepareStatement(sql) ;
+			st.setInt(1, anno);
+		
+			
+			ResultSet res = st.executeQuery() ;
+			int result=0;
+			if(res.next()) {
+				try {
+					
+					result=	res.getInt("id");
+					
+				} catch (Throwable t) {
+					t.printStackTrace();
+					
+				}
+			}
+			
+			conn.close();
+		return result;
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null ;
+		}
+
+	}
+	
 }
