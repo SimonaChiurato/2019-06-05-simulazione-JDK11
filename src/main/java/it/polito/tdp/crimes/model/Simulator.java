@@ -58,6 +58,7 @@ public class Simulator {
 		for(Event c: crimini) {
 			queue.add(new Evento(c, c.getReported_date(),EventType.CRIMINE));
 		}
+	
 		
 		
 	}
@@ -65,10 +66,11 @@ public void run() {
 			Evento e = null;
 			while(!queue.isEmpty()) {
 				e= queue.poll();
-			}
+			
 			
 			switch(e.getTipo()) {
 			case CRIMINE:
+				System.out.println("NUOVO CRIMINE! " + e.getCrimine().getIncident_id());
 				int partenza=-1;
 				double distanza=0.0;
 				if(this.disAgenti.get(e.getCrimine().getDistrict_id())>0){
@@ -86,13 +88,17 @@ public void run() {
 					}
 				}
 				}
+				
 				if(partenza==-1 || distanza>15) {
 					this.malGestiti++;
+					System.out.println("CRIMINE " + e.getCrimine().getIncident_id() + " MAL GESTITO!");
 				}
+				
 				queue.add(new Evento(e.getCrimine(), e.getData().plusMinutes((long) distanza),EventType.ARRIVA_AGENTE));
 				
 				break;
 			case ARRIVA_AGENTE:
+				System.out.println("ARRIVA AGENTE PER CRIMINE! " + e.getCrimine().getIncident_id());
 				long ore;
 				if(e.getCrimine().getOffense_category_id()=="all_other_crimes") {
 					Random r = null;
@@ -105,14 +111,15 @@ public void run() {
 					ore=2;
 				}
 				
-				queue.add(new Evento(e.getCrimine(), e.getData().plusHours(ore),EventType.ARRIVA_AGENTE));
+				queue.add(new Evento(e.getCrimine(), e.getData().plusHours(ore),EventType.GESTITO));
 				break;
 			
 			case GESTITO:
+				System.out.println("CRIMINE " + e.getCrimine().getIncident_id() + " GESTITO");
 				this.disAgenti.put(e.getCrimine().getDistrict_id(), this.disAgenti.get(e.getCrimine().getDistrict_id())+1);
 				break;
 			
-			
+			}
 			}
 		}
 
